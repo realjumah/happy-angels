@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Angels School System</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5fb;--card:#fff;--ink:#16243d;--mut:#5b6b85;--line:#d8e0ee;--acc:#f2a900;--accink:#2a1d00;--head:#1f3a6e;--headink:#fff;--ok:#18794e;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1526;--card:#16213a;--ink:#e8eef9;--mut:#9aa9c4;--line:#2a3a5c;--head:#14264d;--ok:#4cc38a;--bad:#ff7a6b}}
+:root[data-theme="dark"]{--bg:#0d1526;--card:#16213a;--ink:#e8eef9;--mut:#9aa9c4;--line:#2a3a5c;--head:#14264d;--ok:#4cc38a;--bad:#ff7a6b}
+*{box-sizing:border-box}html{height:100%}
+body{height:100%;margin:0;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,.num{font-family:"Nunito",system-ui,sans-serif}
+header{background:var(--head);color:var(--headink);padding:12px 16px 10px}
+h1{margin:0;font-size:20px;line-height:1.15}
+h1:before{content:"";display:inline-block;width:16px;height:7px;border:2.5px solid var(--acc);border-radius:50%;margin-right:8px;vertical-align:4px}
+header small{opacity:.8;font-size:12.5px;cursor:pointer}
+h2{margin:14px 0 8px;font-size:20px}h3{margin:12px 0 6px;font-size:15px;color:var(--mut)}
+main{flex:1;overflow:auto;padding:12px 14px}
+.hide{display:none!important}
+input,select,textarea{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);margin:0 0 10px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+label{font-size:13px;color:var(--mut);display:block;margin:0 0 3px}
+.item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
+.nm{flex:1;min-width:0}.item b{display:block}.item small,small{color:var(--mut)}
+.pr{font-weight:700;white-space:nowrap}.low{color:var(--bad);font-weight:600}
+nav{display:flex;background:var(--card);border-top:1px solid var(--line)}
+nav button{flex:1;padding:13px 2px;border:0;background:none;font-weight:700;color:var(--mut);border-top:4px solid transparent;cursor:pointer}
+nav button.on{color:var(--ink);border-top-color:var(--acc)}
+.cards,.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat small{display:block}.stat .num{font-size:22px;font-weight:800}
+.stat.wide{grid-column:span 2;background:var(--head);color:var(--headink);border-color:var(--head)}.stat.wide small{color:#c5d3ee}
+.btn{display:block;width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-weight:700;margin-top:8px;cursor:pointer}
+.btn.big{background:var(--acc);color:var(--accink);border-color:var(--acc);font-size:17px}.btn.del{color:var(--bad)}
+.empty{color:var(--mut);text-align:center;padding:22px 12px}
+.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;border:1.5px solid var(--line);color:var(--mut)}
+.tag.due{color:var(--bad);border-color:var(--bad)}.tag.warn{color:#8a5a00;border-color:var(--acc);background:rgba(242,169,0,.2)}.tag.ok2{color:var(--ok);border-color:var(--ok)}
+#m{position:fixed;inset:0;background:rgba(8,14,28,.6);display:flex;align-items:flex-end;z-index:5}
+.sheet{background:var(--bg);width:100%;max-height:92%;overflow:auto;border-radius:16px 16px 0 0;padding:4px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.line{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;margin-bottom:7px}
+.line input{width:90px;margin:0;padding:8px}
+.chips,.cb2{display:flex;gap:7px;margin-bottom:10px}.cb2{overflow-x:auto}
+.chip{flex:1;padding:9px 12px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font-weight:700;cursor:pointer;white-space:nowrap}
+.cb2 .chip{flex:none}.chip.on{background:var(--head);color:var(--headink);border-color:var(--head)}
+.kv{display:flex;justify-content:space-between;gap:8px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.sm{color:var(--mut);margin:2px 0 6px;font-size:14px}
+table{width:100%;border-collapse:collapse;margin-bottom:8px}td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right;font-size:14.5px}td:first-child,th:first-child{text-align:left}
+tr[onclick]{cursor:pointer}
+pre{background:var(--card);border:1.5px dashed var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;font:13.5px/1.45 ui-monospace,Menlo,Consolas,monospace;margin:0}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--head);color:var(--headink);padding:10px 16px;border-radius:99px;z-index:9;font-weight:600}
+#login{position:fixed;inset:0;z-index:99;background:var(--bg);display:flex;flex-direction:column;justify-content:center;padding:24px}#login input{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);margin-top:6px}#login h2{margin:0 0 12px}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<header><h1>Happy Angels Nursery &amp; Primary School</h1><small id="tl" onclick="cfg()"></small></header>
+<main id="v"></main>
+<nav id="nav"></nav>
+<div id="m" class="hide" onclick="if(event.target===this)cm()"><div class="sheet" id="sh"></div></div>
+<div id="login" class="hide"><h2>Happy Angels School System</h2><label>Email</label><input id="le" type="email" autocomplete="username"><label>Password</label><input id="lp" type="password" autocomplete="current-password"><button class="btn big" onclick="doLogin()">Log in</button><div class="sm" id="lm" style="margin-top:10px"></div></div>
+<script>
+const K='happyangels_sms_v1',$=i=>document.getElementById(i),pad=(n,l=2)=>String(n).padStart(l,'0');
+const REL=['Catholic','Anglican / Protestant','Pentecostal / Born Again','Muslim','Seventh-day Adventist','Other'],AP=[['BOT','Beginning of term'],['MID','Mid-term'],['EOT','End of term']],_m=new Date().getMonth();
+let S={cfg:{cl:['Baby Class','Middle Class','Top Class','P.1','P.2','P.3','P.4','P.5','P.6','P.7'],year:new Date().getFullYear(),term:_m<4?1:_m<8?2:3,subN:'Literacy, Numeracy, Language, Environment, Health habits',subP:'English, Mathematics, Science, Social Studies',crit:'Lesson planning, Class control, Pupil results, Punctuality, Teamwork'},p:[],t:[],fi:[],pay:[],sc:{},cm:{},ta:{},id:1,rno:1,seed:0};
+let tab='home',sub='sc',fc='All',q='',gb='sex',fo=0,ac='',at='BOT',asj='';
+try{const r=localStorage.getItem(K);if(r)S=JSON.parse(r)}catch(e){}
+if(!S.seed){const C=S.cfg.cl,am=(a,b,c)=>{const o={};C.forEach((x,i)=>o[x]=i<3?a:i<6?b:c);return o};
+ S.fi=[['Tuition',am(120000,160000,180000)],['PTA Fund',am(10000,10000,10000)],['School Tour',am(0,0,15000)],['Development Fund',am(20000,20000,20000)]].map(a=>({id:S.id++,name:a[0],amt:a[1]}));
+ [['F',0,'2021-05-12','Baby Class'],['M',3,'2020-09-03','Middle Class'],['F',1,'2018-02-20','P.1'],['M',0,'2016-07-09','P.3'],['F',3,'2014-11-25','P.5'],['M',1,'2013-04-18','P.6']].forEach((a,i)=>S.p.push({id:S.id++,name:'Sample Pupil '+(i+1),sex:a[0],rel:REL[a[1]],dob:a[2],cls:a[3],par:'Sample Parent '+(i+1),tel:'0700 000 00'+(i+1),tel2:''}));
+ S.t=[{id:S.id++,name:'Sample Teacher 1',tel:'0700 100 001',cls:'Baby Class',sj:''},{id:S.id++,name:'Sample Teacher 2',tel:'0700 100 002',cls:'P.3',sj:'Mathematics'}];S.seed=1;save()}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}pushCloud()}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Math.round(n).toLocaleString('en-US'),money=n=>'UGX '+fmt(n);
+const sum=(a,f)=>a.reduce((x,y)=>x+f(y),0),nat=(a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true});
+const TK=()=>S.cfg.year+'-T'+S.cfg.term,TL=()=>'Term '+S.cfg.term+', '+S.cfg.year,P=id=>S.p.find(x=>x.id===id),FI=id=>S.fi.find(x=>x.id===id),TC=id=>S.t.find(x=>x.id===id);
+const age=d=>{if(!d)return '?';const b=new Date(d),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a};
+const bill=p=>S.fi.filter(i=>(i.amt[p.cls]||0)>0).map(i=>({id:i.id,n:i.name,a:i.amt[p.cls]})),pays=p=>S.pay.filter(x=>x.pid===p.id&&x.tk===TK());
+const paidI=(p,iid)=>sum(pays(p),x=>sum(x.lines.filter(l=>l.i===iid),l=>l.a)),fee=p=>{const b=bill(p),t=sum(b,i=>i.a),pd=sum(pays(p),x=>sum(x.lines,l=>l.a));return{b,t,pd,bal:t-pd}};
+const subs=c=>(/^P\.?\s*\d/i.test(c)?S.cfg.subP:S.cfg.subN).split(',').map(s=>s.trim()).filter(Boolean),crit=()=>S.cfg.crit.split(',').map(s=>s.trim()).filter(Boolean);
+const sc=(pid,per)=>((S.sc[pid]||{})[TK()]||{})[per]||{},av=(p,per)=>{const v=Object.values(sc(p.id,per));return v.length?sum(v,x=>+x)/v.length:null};
+const gr=a=>a==null?'-':a>=80?'A':a>=70?'B':a>=60?'C':a>=50?'D':'E',pos=(p,per)=>{const a=av(p,per),m=S.p.filter(x=>x.cls===p.cls&&av(x,per)!=null);return a==null?'-':(1+m.filter(x=>av(x,per)>a).length)+'/'+m.length};
+const tkey=(id,per)=>id+'|'+TK()+'|'+per,tav=(id,per)=>{const a=S.ta[tkey(id,per)];if(!a)return null;const v=Object.values(a.r).filter(x=>x>0);return v.length?sum(v,x=>x)/v.length:null};
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),2000)}
+function copy(t){const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Copied')}catch(e){toast('Copy failed')}a.remove()};try{navigator.clipboard.writeText(t).then(()=>toast('Copied'),fb)}catch(e){fb()}}
+const share=t=>navigator.share?navigator.share({text:t}).catch(()=>{}):copy(t),show=h=>{$('sh').innerHTML=h;$('m').classList.remove('hide')},cm=()=>$('m').classList.add('hide');
+const ask=(msg,fn)=>{show(`<h2>${msg}</h2><button class="btn big" id="yes">Yes</button><button class="btn" onclick="cm()">No</button>`);$('yes').onclick=()=>{cm();fn()}};
+const btn=(t,f,c='')=>`<button class="btn ${c}" onclick="${f}">${t}</button>`,kv=(a,b,c='')=>`<div class="kv"><span>${a}</span><span${c}>${b}</span></div>`;
+const fld=(l,id,v='',t='text')=>`<label>${l}</label><input id="${id}" type="${t}" ${t==='number'?'inputmode="decimal" ':''}value="${esc(v)}">`;
+const sel=(l,id,o,v,ch='')=>`<label>${l}</label><select id="${id}" ${ch}>${o.map(x=>{const a=Array.isArray(x)?x:[x,x];return `<option value="${esc(a[0])}"${String(a[0])===String(v)?' selected':''}>${esc(a[1])}</option>`}).join('')}</select>`;
+$('nav').innerHTML=[['home','Home'],['pup','Pupils'],['fee','Fees'],['ass','Assess'],['more','More']].map(t=>`<button id="t-${t[0]}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');
+function go(t){tab=t;q='';render()}
+function render(){$('tl').textContent=TL()+' (tap to change)';document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.id==='t-'+tab));({home:rHome,pup:rPup,fee:rFee,ass:rAss,more:rMore})[tab]()}
+const chips=()=>`<div class="cb2">${['All',...S.cfg.cl].map(c=>`<button class="chip${fc===c?' on':''}" onclick="fc='${esc(c)}';render()">${esc(c)}</button>`).join('')}</div>`;
+const vis=()=>S.p.filter(p=>(fc==='All'||p.cls===fc)&&p.name.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>S.cfg.cl.indexOf(a.cls)-S.cfg.cl.indexOf(b.cls)||a.name.localeCompare(b.name));
+
+/* HOME */
+function rHome(){const f=S.p.map(fee),B=S.p.filter(p=>p.sex==='M').length;
+ $('v').innerHTML=`<div class="cards"><div class="stat wide"><small>Pupils enrolled</small><span class="num">${S.p.length}</span> <small>(${B} boys, ${S.p.length-B} girls)</small></div><div class="stat"><small>Fees collected, ${TL()}</small><span class="num">${money(sum(f,x=>x.pd))}</span></div><div class="stat"><small>Fees balance</small><span class="num">${money(sum(f,x=>x.bal))}</span></div><div class="stat"><small>Pupils owing</small><span class="num">${f.filter(x=>x.bal>0).length}</span></div><div class="stat"><small>Teachers</small><span class="num">${S.t.length}</span></div></div><h2>Classes</h2><table><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th><th>Fees paid</th></tr>`
+ +S.cfg.cl.map(c=>{const l=S.p.filter(p=>p.cls===c),b=sum(l,p=>fee(p).t),d=sum(l,p=>fee(p).pd);return `<tr onclick="fc='${esc(c)}';go('pup')"><td>${esc(c)}</td><td>${l.filter(p=>p.sex==='M').length}</td><td>${l.filter(p=>p.sex==='F').length}</td><td><b>${l.length}</b></td><td>${b?Math.round(d/b*100)+'%':'-'}</td></tr>`}).join('')+'</table><div class="sm">Tap a class to see its pupils.</div>'}
+
+/* PUPILS */
+const gk={sex:p=>p.sex==='F'?'Girls':'Boys',rel:p=>p.rel,age:p=>age(p.dob)+' years',none:()=>'All pupils'};
+function rPup(){$('v').innerHTML=`<input type="search" placeholder="Search pupils" value="${esc(q)}" oninput="q=this.value;ll()">${chips()}<label>Group by</label><div class="chips">${[['sex','Sex'],['rel','Religion'],['age','Age'],['none','None']].map(g=>`<button class="chip${gb===g[0]?' on':''}" onclick="gb='${g[0]}';render()">${g[1]}</button>`).join('')}</div><div id="ll"></div>${btn('Add pupil','ep(0)','big')}`;ll()}
+function ll(){const l=vis();if(tab==='fee')return fl(l);const g={};l.forEach(p=>(g[gk[gb](p)]=g[gk[gb](p)]||[]).push(p));
+ $('ll').innerHTML=`<div class="sm">${l.length} pupils: ${l.filter(p=>p.sex==='M').length} boys, ${l.filter(p=>p.sex==='F').length} girls</div>`+(Object.keys(g).sort(nat).map(k=>`<h3>${esc(k)} <span class="tag">${g[k].length}</span></h3>`+g[k].map(p=>`<button class="item" onclick="pf(${p.id})"><span class="nm"><b>${esc(p.name)}</b><small>${p.sex==='F'?'Girl':'Boy'}, ${esc(p.rel)}, ${age(p.dob)} yrs${fc==='All'?', '+esc(p.cls):''}</small></span></button>`).join('')).join('')||'<div class="empty">No pupils found.</div>')}
+function pf(id){const p=P(id);show(`<h2>${esc(p.name)}</h2>${kv('Class',esc(p.cls))}${kv('Sex',p.sex==='F'?'Girl':'Boy')}${kv('Religion',esc(p.rel))}${kv('Age',age(p.dob)+' years'+(p.dob?' (born '+new Date(p.dob).toLocaleDateString('en-GB')+')':''))}<h3>Parent / guardian</h3>${kv('Name',esc(p.par||'-'))}${kv('Phone',p.tel?`<a href="tel:${esc(p.tel.replace(/\s/g,''))}">${esc(p.tel)}</a>`:'-')}${p.tel2?kv('Other phone',esc(p.tel2)):''}${btn('School fees','fs('+id+')','big')}${btn('Report card','rcard('+id+')')}${btn('Edit pupil','ep('+id+')')}${btn('Close','cm()')}`)}
+function ep(id){const p=id?P(id):{name:'',sex:'F',rel:REL[0],dob:'',cls:fc==='All'?S.cfg.cl[0]:fc,par:'',tel:'',tel2:''};
+ show(`<h2>${id?'Edit pupil':'New pupil'}</h2>${fld('Full name','n1',p.name)}${sel('Sex','n2',[['F','Girl'],['M','Boy']],p.sex)}${sel('Class','n3',S.cfg.cl,p.cls)}${sel('Religion','n4',REL,p.rel)}${fld('Date of birth','n5',p.dob,'date')}<h3>Parent / guardian</h3>${fld('Name','n6',p.par)}${fld('Phone','n7',p.tel,'tel')}${fld('Other phone (optional)','n8',p.tel2,'tel')}${btn('Save pupil','sp('+id+')','big')}${id?btn('Delete pupil','dpu('+id+')','del'):''}${btn('Cancel','cm()')}`)}
+function sp(id){const n=$('n1').value.trim();if(!n)return toast('Enter the pupil name');const d={name:n,sex:$('n2').value,cls:$('n3').value,rel:$('n4').value,dob:$('n5').value,par:$('n6').value.trim(),tel:$('n7').value.trim(),tel2:$('n8').value.trim()};id?Object.assign(P(id),d):S.p.push({id:S.id++,...d});save();cm();render()}
+function dpu(id){ask('Delete this pupil and all their fees and scores?',()=>{S.p=S.p.filter(p=>p.id!==id);S.pay=S.pay.filter(x=>x.pid!==id);delete S.sc[id];save();render()})}
+
+/* FEES */
+function rFee(){const f=S.p.map(fee),ex=sum(f,x=>x.t),co=sum(f,x=>x.pd);
+ $('v').innerHTML=`<div class="cards"><div class="stat wide"><small>${TL()} collected</small><span class="num">${money(co)}</span></div><div class="stat"><small>Expected</small><span class="num">${money(ex)}</span></div><div class="stat"><small>Balance</small><span class="num">${money(ex-co)}</span></div></div><h2>By fee item</h2>`
+ +S.fi.map(i=>kv(esc(i.name),money(sum(S.pay.filter(x=>x.tk===TK()),x=>sum(x.lines.filter(l=>l.i===i.id),l=>l.a)))+' of '+money(sum(S.p,p=>i.amt[p.cls]||0)))).join('')+btn('Manage fee items and amounts','mfi()')
+ +`<h2>Pupil balances</h2><input type="search" placeholder="Search pupils" value="${esc(q)}" oninput="q=this.value;ll()">${chips()}<div class="chips"><button class="chip${fo?' on':''}" onclick="fo=!fo;render()">Owing only</button></div><div id="ll"></div>`;ll()}
+function fl(l){if(fo)l=l.filter(p=>fee(p).bal>0);$('ll').innerHTML=l.map(p=>{const f=fee(p);return `<button class="item" onclick="fs(${p.id})"><span class="nm"><b>${esc(p.name)}</b><small>${esc(p.cls)}, billed ${money(f.t)}</small></span><span style="text-align:right"><span class="pr">${f.bal>0?money(f.bal):'Cleared'}</span><br>${f.t===0?'':f.bal<=0?'<span class="tag ok2">Paid</span>':f.pd>0?'<span class="tag warn">Part</span>':'<span class="tag due">Unpaid</span>'}</span></button>`}).join('')||'<div class="empty">No pupils found.</div>'}
+function fs(id){const p=P(id),f=fee(p);show(`<h2>${esc(p.name)}</h2><small>${esc(p.cls)}, ${TL()}</small><table><tr><th>Item</th><th>Bill</th><th>Paid</th><th>Balance</th></tr>${f.b.map(i=>{const d=paidI(p,i.id);return `<tr><td>${esc(i.n)}</td><td>${fmt(i.a)}</td><td>${fmt(d)}</td><td class="${i.a-d>0?'low':''}">${fmt(i.a-d)}</td></tr>`}).join('')||'<tr><td colspan="4">No fees set for this class.</td></tr>'}<tr><td><b>Total</b></td><td><b>${fmt(f.t)}</b></td><td><b>${fmt(f.pd)}</b></td><td><b>${fmt(f.bal)}</b></td></tr></table>${btn('Record payment','rp('+id+')','big')}${f.bal>0?btn('Copy reminder for parent','copy(rem('+id+'))'):''}<h3>Receipts this term</h3>${pays(p).map(x=>`<button class="item" onclick="rcpt('${x.no}')"><span class="nm"><b>${x.no}</b><small>${new Date(x.t).toLocaleDateString('en-GB')}, ${x.method}</small></span><span class="pr">${money(sum(x.lines,l=>l.a))}</span></button>`).join('')||'<div class="sm">No payments yet.</div>'}${btn('Close','cm()')}`)}
+function rem(id){const p=P(id),f=fee(p);return `Dear ${p.par||'parent'}, ${p.name} (${p.cls}) has an outstanding balance of ${money(f.bal)} for ${TL()} at Happy Angels Nursery & Primary School: `+f.b.map(i=>[i.n,i.a-paidI(p,i.id)]).filter(a=>a[1]>0).map(a=>a[0]+' '+money(a[1])).join(', ')+'. Kindly clear it. Thank you.'}
+function rp(id){const p=P(id),rows=fee(p).b.map(i=>({...i,b:i.a-paidI(p,i.id)})).filter(i=>i.b>0);show(`<h2>Record payment</h2><small>${esc(p.name)}, ${TL()}</small>`+(rows.map(i=>`<label>${esc(i.n)} (balance ${fmt(i.b)})</label><input class="pi" data-i="${i.id}" data-b="${i.b}" type="number" inputmode="decimal" placeholder="0">`).join('')||'<div class="empty">Nothing outstanding for this term.</div>')+sel('Method','pm',['Cash','Mobile Money','Bank'])+(rows.length?btn('Fill all balances',"document.querySelectorAll('.pi').forEach(e=>e.value=e.dataset.b)")+btn('Save payment','sv('+id+')','big'):'')+btn('Cancel','cm()'))}
+function sv(id){const lines=[...document.querySelectorAll('.pi')].map(e=>({i:+e.dataset.i,a:+e.value})).filter(l=>l.a>0);if(!lines.length)return toast('Enter an amount');const x={no:'F'+pad(S.rno++,4),pid:id,t:Date.now(),tk:TK(),method:$('pm').value,lines};S.pay.unshift(x);save();rcpt(x.no);render()}
+function rtx(x){const p=P(x.pid),a=x.tk.split('-T');return `HAPPY ANGELS NURSERY & PRIMARY SCHOOL\nFees receipt ${x.no}\n${new Date(x.t).toLocaleDateString('en-GB')}\n--------------------------\nPupil: ${p?p.name:'?'}\nClass: ${p?p.cls:''}\nTerm ${a[1]}, ${a[0]}\n--------------------------\n`+x.lines.map(l=>{const i=FI(l.i);return (i?i.name:'Item')+': '+money(l.a)}).join('\n')+`\nTOTAL PAID: ${money(sum(x.lines,l=>l.a))} (${x.method})\n`+(p&&x.tk===TK()?'Balance now: '+money(fee(p).bal)+'\n':'')+'Received with thanks.'}
+function rcpt(no){show(`<h2>Receipt ${no}</h2><pre>${esc(rtx(S.pay.find(y=>y.no===no)))}</pre>${btn('Share receipt',`share(rtx(S.pay.find(y=>y.no==='${no}')))`,'big')}${btn('Close','cm()')}`)}
+function mfi(){show(`<h2>Fee items</h2><div class="sm">Tuition, PTA fund, tour and anything else you charge. Amounts below are samples: edit them.</div>`+S.fi.map(i=>`<button class="item" onclick="efi(${i.id})"><span class="nm"><b>${esc(i.name)}</b></span></button>`).join('')+btn('Add fee item','efi(0)','big')+btn('Close','cm()'))}
+function efi(id){const i=id?FI(id):{name:'',amt:{}};show(`<h2>${id?'Edit fee item':'New fee item'}</h2>${fld('Name (e.g. School Tour)','f0',i.name)}<div class="sm">Amount per pupil each term, by class. Leave empty if the class does not pay it.</div>`+S.cfg.cl.map(c=>`<label>${esc(c)}</label><input class="fa" data-c="${esc(c)}" type="number" inputmode="decimal" value="${i.amt[c]||''}">`).join('')+btn('Save fee item','sfi('+id+')','big')+(id?btn('Delete fee item','dfi('+id+')','del'):'')+btn('Cancel','mfi()'))}
+function sfi(id){const n=$('f0').value.trim();if(!n)return toast('Enter the item name');const amt={};document.querySelectorAll('.fa').forEach(e=>{if(+e.value>0)amt[e.dataset.c]=+e.value});id?Object.assign(FI(id),{name:n,amt}):S.fi.push({id:S.id++,name:n,amt});save();mfi();render()}
+function dfi(id){ask('Delete this fee item? Payments already recorded for it stay in the totals.',()=>{S.fi=S.fi.filter(i=>i.id!==id);save();render()})}
+
+/* ASSESS */
+function rAss(){$('v').innerHTML=`<div class="chips">${[['sc','Scores'],['rep','Reports'],['tch','Teachers']].map(s=>`<button class="chip${sub===s[0]?' on':''}" onclick="sub='${s[0]}';render()">${s[1]}</button>`).join('')}</div><div id="as"></div>`;({sc:aSc,rep:aRep,tch:aTch})[sub]()}
+function aSc(){if(!S.cfg.cl.includes(ac))ac=S.cfg.cl[0];const sj=subs(ac);if(!sj.includes(asj))asj=sj[0];const l=S.p.filter(p=>p.cls===ac).sort((a,b)=>a.name.localeCompare(b.name));
+ $('as').innerHTML=sel('Class','s1',S.cfg.cl,ac,'onchange="ac=this.value;render()"')+sel('Assessment','s2',AP,at,'onchange="at=this.value;render()"')+sel('Subject','s3',sj,asj,'onchange="asj=this.value;render()"')+'<div class="sm" id="avg"></div>'+(l.map(p=>`<div class="line"><div class="nm"><b>${esc(p.name)}</b></div><input type="number" inputmode="decimal" placeholder="/100" value="${sc(p.id,at)[asj]??''}" onchange="ss(${p.id},this.value)"></div>`).join('')||'<div class="empty">No pupils in this class yet.</div>');avg()}
+function avg(){const v=S.p.filter(p=>p.cls===ac).map(p=>sc(p.id,at)[asj]).filter(x=>x!=null);$('avg').textContent=asj+': class average '+(v.length?Math.round(sum(v,x=>x)/v.length):'-')+' ('+v.length+' marked)'}
+function ss(pid,v){const a=S.sc[pid]=S.sc[pid]||{},b=a[TK()]=a[TK()]||{},c=b[at]=b[at]||{};v===''?delete c[asj]:c[asj]=Math.min(100,Math.max(0,+v));save();avg()}
+function aRep(){if(!S.cfg.cl.includes(ac))ac=S.cfg.cl[0];$('as').innerHTML=sel('Class','s1',S.cfg.cl,ac,'onchange="ac=this.value;render()"')+S.p.filter(p=>p.cls===ac).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<button class="item" onclick="rcard(${p.id})"><span class="nm"><b>${esc(p.name)}</b><small>${AP.map(a=>{const v=av(p,a[0]);return a[0]+' '+(v==null?'-':Math.round(v))}).join(' | ')}</small></span></button>`).join('')||'<div class="empty">No pupils in this class yet.</div>'}
+function rcard(id){const p=P(id),sj=subs(p.cls),r=(per,s)=>sc(id,per)[s]??'-',row=(n,f)=>`<tr><td>${n}</td>${AP.map(a=>`<td>${f(a[0])}</td>`).join('')}</tr>`;
+ show(`<h2>${esc(p.name)}</h2><small>${esc(p.cls)}, ${TL()}</small><table><tr><th>Subject</th>${AP.map(a=>`<th>${a[0]}</th>`).join('')}</tr>${sj.map(s=>row(esc(s),per=>r(per,s))).join('')}${row('<b>Average</b>',per=>{const v=av(p,per);return v==null?'-':'<b>'+Math.round(v)+'</b>'})}${row('Grade',per=>gr(av(p,per)))}${row('Position',per=>pos(p,per))}</table><div class="sm">BOT beginning of term, MID mid-term, EOT end of term. Grades: A 80+, B 70+, C 60+, D 50+, E below 50.</div><label>Class teacher's comment</label><textarea id="cmt" rows="3">${esc(S.cm[id+TK()]||'')}</textarea>${btn('Save comment and copy report','scm('+id+')','big')}${btn('Close','cm()')}`)}
+function scm(id){const p=P(id),sj=subs(p.cls);S.cm[id+TK()]=$('cmt').value.trim();save();copy(`HAPPY ANGELS NURSERY & PRIMARY SCHOOL\nReport: ${p.name}, ${p.cls}, ${TL()}\n`+sj.map(s=>s+': '+AP.map(a=>a[0]+' '+(sc(id,a[0])[s]??'-')).join(', ')).join('\n')+'\n'+AP.map(a=>{const v=av(p,a[0]);return a[0]+' average '+(v==null?'-':Math.round(v))+' (grade '+gr(v)+', position '+pos(p,a[0])+')'}).join('\n')+(S.cm[id+TK()]?'\nTeacher comment: '+S.cm[id+TK()]:''))}
+function aTch(){$('as').innerHTML=(S.t.map(t=>`<button class="item" onclick="ap(${t.id},'BOT')"><span class="nm"><b>${esc(t.name)}</b><small>${esc(t.cls||'No class')}${t.sj?', '+esc(t.sj):''}${t.tel?', '+esc(t.tel):''}<br>${AP.map(a=>{const v=tav(t.id,a[0]);return a[0]+' '+(v==null?'-':v.toFixed(1)+'/5')}).join(' | ')}</small></span></button>`).join('')||'<div class="empty">No teachers yet.</div>')+btn('Add teacher','et(0)','big')}
+function ap(id,per){const t=TC(id),a=S.ta[tkey(id,per)]||{r:{},n:''};show(`<h2>${esc(t.name)}</h2><small>Teacher appraisal, ${TL()}</small>${sel('Assessment period','a0',AP,per,`onchange="ap(${id},this.value)"`)}${crit().map((c,i)=>sel(esc(c)+' (1 poor, 5 excellent)','ar'+i,['-',1,2,3,4,5],a.r[c]||'-')).join('')}<label>Comment</label><textarea id="apn" rows="2">${esc(a.n)}</textarea>${btn('Save appraisal',`sap(${id},'${per}')`,'big')}${btn('Edit teacher details','et('+id+')')}${btn('Close','cm()')}`)}
+function sap(id,per){const r={};crit().forEach((c,i)=>{const v=$('ar'+i).value;if(v!=='-')r[c]=+v});S.ta[tkey(id,per)]={r,n:$('apn').value.trim()};save();cm();render()}
+function et(id){const t=id?TC(id):{name:'',tel:'',cls:'',sj:''};show(`<h2>${id?'Edit teacher':'New teacher'}</h2>${fld('Full name','e1',t.name)}${fld('Phone','e2',t.tel,'tel')}${sel('Class teacher of','e3',[['','None'],...S.cfg.cl],t.cls)}${fld('Subjects taught (optional)','e4',t.sj)}${btn('Save teacher','st('+id+')','big')}${id?btn('Delete teacher','dt('+id+')','del'):''}${btn('Cancel','cm()')}`)}
+function st(id){const n=$('e1').value.trim();if(!n)return toast('Enter the teacher name');const d={name:n,tel:$('e2').value.trim(),cls:$('e3').value,sj:$('e4').value.trim()};id?Object.assign(TC(id),d):S.t.push({id:S.id++,...d});save();cm();render()}
+function dt(id){ask('Delete this teacher and their appraisals?',()=>{S.t=S.t.filter(t=>t.id!==id);Object.keys(S.ta).forEach(k=>{if(k.split('|')[0]==id)delete S.ta[k]});save();render()})}
+
+/* MORE */
+function rMore(){$('v').innerHTML='<h2>Settings and data</h2>'+btn('Settings: term, year, subjects, classes','cfg()','big')+btn('Copy backup of all data','copy(JSON.stringify(S))')+btn('Restore from backup','rb()')+btn('Clear all pupils, fees and scores','clr()','del')+btn('Log out','logout()')+'<div class="sm" style="margin-top:14px">Data is saved online and shared with every logged-in device. Copy a backup regularly and keep it in WhatsApp or on a flash disk. Sample pupils, teachers and fee amounts are placeholders: clear them before real use.</div>'}
+function cfg(){const c=S.cfg;show(`<h2>Settings</h2>${fld('Year','c1',c.year,'number')}${sel('Term','c2',[1,2,3].map(x=>[x,'Term '+x]),c.term)}<label>Nursery subjects (separate with commas)</label><textarea id="c3" rows="2">${esc(c.subN)}</textarea><label>Primary subjects</label><textarea id="c4" rows="2">${esc(c.subP)}</textarea><label>Teacher appraisal criteria</label><textarea id="c5" rows="2">${esc(c.crit)}</textarea><label>Classes in order. Add new ones freely; do not rename a class that has pupils.</label><textarea id="c6" rows="2">${esc(c.cl.join(', '))}</textarea>${btn('Save settings','scf()','big')}${btn('Cancel','cm()')}`)}
+function scf(){const c=S.cfg,l=$('c6').value.split(',').map(s=>s.trim()).filter(Boolean);c.year=+$('c1').value||c.year;c.term=+$('c2').value;c.subN=$('c3').value;c.subP=$('c4').value;c.crit=$('c5').value;if(l.length)c.cl=l;save();cm();render()}
+const clr=()=>ask('Delete ALL pupils, payments, scores and teachers? Settings and fee items stay.',()=>{S.p=[];S.pay=[];S.sc={};S.cm={};S.ta={};S.t=[];save();render()});
+function rb(){show('<h2>Restore from backup</h2><label>Paste the copied backup. This replaces everything now on this phone.</label><textarea id="rbt" rows="6"></textarea>'+btn('Restore','rbo()','big')+btn('Cancel','cm()'))}
+function rbo(){try{const o=JSON.parse($('rbt').value);if(!Array.isArray(o.p)||!o.cfg)throw 0;S=o;save();cm();render();toast('Backup restored')}catch(e){toast('That is not a valid backup')}}
+/* CLOUD (Firebase) */
+firebase.initializeApp({apiKey:"AIzaSyBIupWAv7GXKwMfceG3VjDkZ_rsMPBa3so",authDomain:"happy-angels-31d8f.firebaseapp.com",projectId:"happy-angels-31d8f",storageBucket:"happy-angels-31d8f.firebasestorage.app",messagingSenderId:"774639060196",appId:"1:774639060196:web:d001d1262aa604821698f1"});
+const auth=firebase.auth(),db=firebase.firestore(),col=()=>db.collection('school');
+db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+let synced={},ready=0,unsub=null,pt=null;
+function pushCloud(){if(!ready)return;clearTimeout(pt);pt=setTimeout(()=>{Object.keys(S).forEach(k=>{const v=JSON.stringify(S[k]);if(synced[k]!==v){synced[k]=v;col().doc(k).set({v}).catch(()=>toast('Could not sync. Will retry when online.'))}})},400)}
+function startCloud(){ready=0;col().get().then(sn=>{if(sn.empty){ready=1;pushCloud()}else{sn.forEach(d=>{try{S[d.id]=JSON.parse(d.data().v);synced[d.id]=d.data().v}catch(e){}});try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}ready=1}
+ $('login').classList.add('hide');render();
+ unsub&&unsub();unsub=col().onSnapshot(s2=>{let ch=0;s2.docChanges().forEach(c=>{const v=c.doc.data().v;if(c.doc.metadata.hasPendingWrites||synced[c.doc.id]===v)return;try{S[c.doc.id]=JSON.parse(v);synced[c.doc.id]=v;ch=1}catch(e){}});if(ch&&$('m').classList.contains('hide'))render()})
+}).catch(e=>{$('lm').textContent='Could not load data: '+e.message;$('login').classList.remove('hide')})}
+function doLogin(){$('lm').textContent='Logging in...';auth.signInWithEmailAndPassword($('le').value.trim(),$('lp').value).catch(e=>{$('lm').textContent='Login failed. Check email and password.'})}
+function logout(){ready=0;unsub&&unsub();auth.signOut()}
+auth.onAuthStateChanged(u=>{if(u)startCloud();else{ready=0;$('login').classList.remove('hide');$('lm').textContent=''}});
+</script>
+</body>
+</html>
