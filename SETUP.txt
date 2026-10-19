@@ -1,0 +1,62 @@
+SMARTSCHOOL APP: MANY SCHOOLS, ONE SYSTEM (14-day trial, 20,000 per month)
+
+USE THE SAME FIREBASE PROJECT YOU ALREADY HAVE FOR HAPPY ANGELS (happy-angels-31d8f).
+Do not create a new one. Every school's data is kept apart inside it (schools/<id>/records), and
+only that school's members can read it. Your old data in the "school" collection is not touched or deleted.
+
+STEP 0  SAVE YOUR HAPPY ANGELS DATA FIRST (before changing anything)
+        Open the OLD app -> More -> "Copy backup of all data" -> paste it into WhatsApp "Message yourself" or Notes.
+        Also keep that phone's old app as it is until the new one works.
+
+STEP 1  FIREBASE: TURN SIGN-UP BACK ON  (you switched it off earlier; new schools cannot register without it)
+        Authentication -> Settings -> User actions -> tick "Enable create (sign-up)" -> Save.
+        Authentication -> Settings -> Authorized domains: realjumah.github.io must be listed.
+
+STEP 2  FIREBASE: PUBLISH THE NEW RULES
+        Firestore Database -> Rules -> delete everything -> paste all of firestore.rules -> Publish.
+        (The old app stops working from this moment, so do Step 3 straight away.)
+
+STEP 3  GITHUB: UPLOAD THE FILES
+        In your happy-angels repository: delete config.js. Upload every file in this folder (including .nojekyll),
+        replacing index.html and firestore.rules. Open firebase-config.js on GitHub (pencil icon) and paste your
+        apiKey and appId between the quotes (same values as your old config.js). Commit. Wait 2 minutes.
+        Open https://realjumah.github.io/happy-angels/ and close/reopen it twice so the new version loads.
+
+STEP 4  CREATE YOUR OWN ACCOUNT AND SCHOOL (this becomes your admin account)
+        Create account (or sign in with an existing one), open the verification email, tap "I have verified my email".
+        Enter the school name and description -> "Create my school".
+        More -> Restore from backup -> paste the backup from Step 0 (or choose the file) -> Restore.
+        Check pupils, fees and scores. Settings: School name is empty after a restore from the old app, so set it there.
+
+STEP 5  MAKE YOURSELF ADMIN (one time, by hand)
+        Firebase -> Authentication -> Users -> copy YOUR "User UID".
+        Firestore Database -> Data -> Start collection -> Collection ID: admins -> Document ID: your UID ->
+        field name = x, type boolean, value true -> Save.
+        Reopen the app. More -> Subscription -> Open admin screen -> "Payment details": enter your mobile money
+        number, fully registered name, price 20000 -> Save. Your own school is free.
+
+STEP 6  TEST WITH A SECOND EMAIL BEFORE TELLING OTHER SCHOOLS
+        Sign up with another email, create a school, check "Free trial: 14 days left".
+        Subscribe -> send test payment details. On your admin account: Admin -> Payments -> Approve.
+        The test account gets a "Payment confirmed" message.
+        Then invite a teacher: Cloud & team settings -> copy the invite code -> teacher signs up, verifies, pastes the code.
+
+HOW IT WORKS
+  - Each school: sign up, create school, invite teachers with a private code, own separate data, own name/description
+    (More -> Settings). New schools start blank, with no Happy Angels name, no sample pupils.
+  - 14-day trial starts when the owner creates the school. Reminder from 5 days before the end; 3 days of warnings
+    after; then the app locks (the locked screen still allows a backup download). Nothing is ever deleted.
+  - Owner pays 20,000 per month by mobile money to your number, enters the transaction ID. You approve it in
+    Admin -> Payments. The school gets an in-app message. Admin also has: Clients, Send message, Payment details.
+  - Alerts (More -> Subscription -> Message alerts): phone notification tone/vibration, in-app beep, or off.
+
+KNOWN LIMITS
+  - Every teacher who joins can edit all records, including fees (no separate permissions yet).
+  - Free Firebase limits (about 50,000 reads and 20,000 writes per day) are shared by ALL schools together.
+    A new phone joining reads the whole school once. Watch Firebase -> Usage as schools are added.
+  - Billing applies to schools connected to the cloud. The lock is checked inside the app.
+  - Alerts arrive while the app is open or in the background. A fully closed app needs push (paid Blaze plan).
+  - If two teachers enter marks for the SAME pupil in the SAME assessment period at the same moment, subjects are
+    merged; the same subject entered twice keeps the later one. Receipt numbers could repeat if two phones record a
+    payment at the very same moment; the records themselves are all kept.
+  - Restoring a backup on a connected phone replaces the school's records for everyone (the app asks first).

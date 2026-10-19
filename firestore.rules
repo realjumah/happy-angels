@@ -1,0 +1,176 @@
+rules_version = '2';
+
+// SmartSchool — Firestore security rules (many schools, one Firebase project).
+// Publish in: Firebase console -> Firestore Database -> Rules -> paste -> Publish.
+//
+// Who can do what:
+//  - Only signed-in users with a VERIFIED email can touch anything.
+//  - A school's records can be read/written only by members of that school.
+//  - The owner's school id is the owner's own user id (one school per owner, nobody can create spam schools under other ids).
+//  - Staff join only by presenting a valid invite code; the owner can remove staff at any time.
+//  - Records can never be hard-deleted from the app (deletes are small "tombstone" updates), and every
+//    record write must carry the server's time, so a phone cannot back-date changes to hide them.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function verified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function memberPath(schoolId) {
+      return /databases/$(database)/documents/schools/$(schoolId)/members/$(request.auth.uid);
+    }
+    function isMember(schoolId) {
+      return verified() && exists(memberPath(schoolId));
+    }
+    function isOwner(schoolId) {
+      return verified() && get(memberPath(schoolId)).data.role == 'owner';
+    }
+    // Platform administrator (you): a document admins/<your uid> that YOU create by hand in the Firebase console.
+    function isAdmin() {
+      return verified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    function validRecord() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['t', 'k', 'j', 'x', 'u', 'by'])
+          && d.keys().hasAll(['t', 'k', 'j', 'x', 'u', 'by'])
+          && d.t is string && d.t.size() <= 12
+          && d.k is string && d.k.size() <= 64
+          && d.j is string && d.j.size() <= 950000
+          && d.x is bool
+          && d.u == request.time
+          && d.by == request.auth.uid;
+    }
+
+    // Pointer so a person's other phones can find their school after signing in.
+    match /users/{uid} {
+      allow read, delete: if verified() && request.auth.uid == uid;
+      allow create, update: if verified() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['schoolId', 'role', 'at', 'seen'])
+        && request.resource.data.schoolId is string
+        && request.resource.data.role in ['owner', 'staff'];
+    }
+
+    // Invite codes: anyone signed in can look up ONE code they know, but nobody can list them.
+    match /invites/{code} {
+      allow get: if verified();
+      allow list, update: if false;
+      allow create: if verified()
+        && code.matches('^[A-Z2-7]{16,32}$')
+        && request.resource.data.keys().hasOnly(['schoolId', 'at'])
+        && request.resource.data.schoolId == request.auth.uid;
+      allow delete: if verified() && resource.data.schoolId == request.auth.uid;
+    }
+
+    match /schools/{schoolId} {
+      allow get: if isMember(schoolId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if verified() && schoolId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['name', 'ownerUid', 'at', 'desc'])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.name is string && request.resource.data.name.size() <= 120
+        && (!('desc' in request.resource.data) || (request.resource.data.desc is string && request.resource.data.desc.size() <= 500));
+      allow update: if isOwner(schoolId)
+        && request.resource.data.keys().hasOnly(['name', 'ownerUid', 'at', 'desc'])
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && (!('desc' in request.resource.data) || (request.resource.data.desc is string && request.resource.data.desc.size() <= 500))
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() <= 120));
+      allow delete: if false;
+
+      // Messages from the platform admin to this school (payment confirmed, reminders, announcements).
+      match /notices/{nid} {
+        allow read: if isMember(schoolId) || isAdmin();
+        allow create: if isAdmin()
+          && request.resource.data.keys().hasOnly(['title', 'body', 'kind', 'at'])
+          && request.resource.data.title is string && request.resource.data.title.size() <= 120
+          && request.resource.data.body is string && request.resource.data.body.size() <= 1000
+          && request.resource.data.at == request.time;
+        allow update, delete: if false;
+      }
+
+      match /members/{uid} {
+        allow get: if verified() && (request.auth.uid == uid || isOwner(schoolId));
+        allow list: if isOwner(schoolId);
+        allow create: if verified() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['role', 'email', 'code', 'at'])
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.code is string
+          && (
+            // the owner creating their own school
+            (schoolId == request.auth.uid && request.resource.data.role == 'owner')
+            ||
+            // staff joining with a valid invite code
+            (request.resource.data.role == 'staff'
+              && request.resource.data.code.matches('^[A-Z2-7]{16,32}$')
+              && get(/databases/$(database)/documents/invites/$(request.resource.data.code)).data.schoolId == schoolId)
+          );
+        // the owner can only replace their own invite code
+        allow update: if verified() && request.auth.uid == uid && schoolId == request.auth.uid
+          && request.resource.data.role == 'owner'
+          && request.resource.data.keys().hasOnly(['role', 'email', 'code', 'at'])
+          && request.resource.data.email == request.auth.token.email;
+        // staff can leave; the owner can remove staff (but not themselves)
+        allow delete: if verified() && (
+          (request.auth.uid == uid && resource.data.role == 'staff')
+          || (isOwner(schoolId) && uid != request.auth.uid)
+        );
+      }
+
+      match /records/{recId} {
+        allow read: if isMember(schoolId);
+        allow create, update: if isMember(schoolId) && validRecord();
+        allow delete: if false;
+      }
+    }
+
+    // ---- Subscription ----------------------------------------------------------------------------
+    // Billing status of a school. Members can read it; only the admin can change it.
+    // The owner may create it ONCE, and only as a fresh 14-day trial starting at the server's time.
+    match /billing/{schoolId} {
+      allow get: if isMember(schoolId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin() || (isOwner(schoolId) && schoolId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['plan', 'trialStart', 'trialDays', 'paidUntil', 'free'])
+        && request.resource.data.plan == 'school'
+        && request.resource.data.trialStart == request.time
+        && request.resource.data.trialDays == 14
+        && request.resource.data.paidUntil == null
+        && request.resource.data.free == false);
+      allow update, delete: if isAdmin();
+    }
+
+    // Payment requests sent by a school owner after paying by mobile money; the admin approves or rejects them.
+    match /payments/{pid} {
+      allow create: if verified() && isOwner(request.resource.data.schoolId)
+        && request.resource.data.schoolId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['schoolId', 'txn', 'from', 'amount', 'months', 'name', 'status', 'at'])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.txn is string && request.resource.data.txn.size() >= 3 && request.resource.data.txn.size() <= 40
+        && request.resource.data.from is string && request.resource.data.from.size() <= 20
+        && request.resource.data.name is string && request.resource.data.name.size() <= 120
+        && request.resource.data.months is int && request.resource.data.months >= 1 && request.resource.data.months <= 12
+        && request.resource.data.amount is number
+        && request.resource.data.at == request.time;
+      allow get, list: if isAdmin() || (verified() && resource.data.schoolId == request.auth.uid);
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Where to pay (mobile money number, registered name, monthly price). Everyone signed in can read; only the admin can write.
+    match /platform/{docId} {
+      allow get: if verified();
+      allow write: if isAdmin();
+    }
+
+    // Admin marker. Create by hand in the console. Nobody can create or change it from the app.
+    match /admins/{uid} {
+      allow get: if verified() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
