@@ -17,7 +17,7 @@
 
   // ---- what gets synced -------------------------------------------------------------------------
   // Arrays of records that each have a unique `id`. If you ever add a new array like this to the app, add it here.
-  const COLS=['p','t','fi','pay'];            // arrays of records with a unique id
+  const COLS=['p','t','fi','pay','dl'];            // arrays of records with a unique id
   const VIRT=['sc','cm','ta'];                   // keyed objects: one cloud record per pupil+term+period (sc), per comment (cm), per appraisal (ta)
   // Per-phone bookkeeping that must NOT be shared between phones.
   const LOCAL_ONLY=['id','rno','seed'];
@@ -413,7 +413,7 @@
     const items=[];let maxU=0;
     snap.forEach(d=>{const x=d.data();const u=x.u&&x.u.toMillis?x.u.toMillis():0;if(u>maxU)maxU=u;items.push({key:d.id,x:!!x.x,j:x.j,u})});
     items.sort((a,b)=>a.u-b.u);
-    const nd={id:(S&&S.id)||1,rno:1,seed:1,p:[],t:[],fi:[],pay:[],sc:{},cm:{},ta:{}};
+    const nd={id:(S&&S.id)||1,rno:1,seed:1,p:[],t:[],fi:[],pay:[],dl:[],sc:{},cm:{},ta:{}};
     const savedBase=state.base;state.base={};
     applyItems(nd,items,true);
     if(!nd.cfg){state.base=savedBase;throw new Error('This school has no records in the cloud yet. Ask the owner to finish setting it up.')}

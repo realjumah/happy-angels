@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smartschool-v1';
+const CACHE_NAME = 'smartschool-v2';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './firebase-config.js', './firebase-bundle.js', './cloud.js', './subscription.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
