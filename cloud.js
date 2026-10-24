@@ -17,8 +17,8 @@
 
   // ---- what gets synced -------------------------------------------------------------------------
   // Arrays of records that each have a unique `id`. If you ever add a new array like this to the app, add it here.
-  const COLS=['p','t','fi','pay','dl'];            // arrays of records with a unique id
-  const VIRT=['sc','cm','ta'];                   // keyed objects: one cloud record per pupil+term+period (sc), per comment (cm), per appraisal (ta)
+  const COLS=['p','t','fi','pay','dl','ex','ev'];            // arrays of records with a unique id
+  const VS=['cm','ta','att','en','tt','ros'],VIRT=['sc',...VS];                   // keyed objects: one cloud record per pupil+term+period (sc), per comment (cm), per appraisal (ta)
   // Per-phone bookkeeping that must NOT be shared between phones.
   const LOCAL_ONLY=['id','rno','seed'];
   // Everything else at the top level of the data (school, L, staff, PL, mmr, lastSb ...) is synced as one small doc each.
@@ -111,8 +111,7 @@
     }
     const put=(t,k,v)=>{const j=JSON.stringify(v);map.set(t+':'+k,{t,k:String(k),j,h:H(j)})};
     for(const pid of Object.keys(S.sc||{}))for(const tk of Object.keys(S.sc[pid]||{}))for(const per of Object.keys(S.sc[pid][tk]||{}))put('sc',pid+'|'+tk+'|'+per,S.sc[pid][tk][per]);
-    for(const k of Object.keys(S.cm||{}))put('cm',k,S.cm[k]);
-    for(const k of Object.keys(S.ta||{}))put('ta',k,S.ta[k]);
+    for(const t of VS)for(const k of Object.keys(S[t]||{}))put(t,k,S[t][k]);
     for(const key of Object.keys(S)){
       if(COLS.includes(key)||VIRT.includes(key)||LOCAL_ONLY.includes(key)||S[key]===undefined)continue;
       put('@',key,S[key]);
@@ -149,21 +148,21 @@
     const vsplit=k=>k.split('|');
     const getCur=(t,k)=>{
       if(t==='sc'){const[a,b,c]=vsplit(k);const v=(((T.sc||{})[a]||{})[b]||{})[c];return v===undefined?undefined:{rec:v}}
-      if(t==='cm'||t==='ta'){const v=(T[t]||{})[k];return v===undefined?undefined:{rec:v}}
+      if(VS.includes(t)){const v=(T[t]||{})[k];return v===undefined?undefined:{rec:v}}
       if(t==='@')return T[k]===undefined?undefined:{rec:T[k]};
       const ix=ensure(t);const p=ix.pos.get(k);
       return p===undefined?undefined:{rec:ix.arr[p]};
     };
     const setCur=(t,k,rec)=>{
       if(t==='sc'){const[a,b,c]=vsplit(k);T.sc=T.sc||{};((T.sc[a]=T.sc[a]||{})[b]=T.sc[a][b]||{})[c]=rec;changed=true;return}
-      if(t==='cm'||t==='ta'){(T[t]=T[t]||{})[k]=rec;return}
+      if(VS.includes(t)){(T[t]=T[t]||{})[k]=rec;return}
       if(t==='@'){T[k]=rec;return}
       const ix=ensure(t);const p=ix.pos.get(k);
       if(p===undefined){ix.arr.push(rec);ix.pos.set(k,ix.arr.length-1)}else ix.arr[p]=rec;
     };
     const delCur=(t,k)=>{
       if(t==='sc'){const[a,b,c]=vsplit(k);try{delete T.sc[a][b][c]}catch{}return}
-      if(t==='cm'||t==='ta'){try{delete T[t][k]}catch{}return}
+      if(VS.includes(t)){try{delete T[t][k]}catch{}return}
       if(t==='@')return;                          // single docs are never deleted
       const ix=ensure(t);const p=ix.pos.get(k);
       if(p!==undefined){ix.arr[p]=null;ix.pos.delete(k)}
@@ -184,7 +183,7 @@
         const lh=HR(cur.rec);
         if(lh===ih){state.base[it.key]=ih;continue}              // already identical
         if(!fresh&&lh!==bh){                                      // this phone has an unsynced edit of the same record
-          if(t==='sc'&&ih!==bh){setCur(t,k,Object.assign({},rec,cur.rec));state.base[it.key]=ih;changed=true;continue}   // different subjects entered on two phones: keep both
+          if((t==='sc'||t==='att')&&ih!==bh){setCur(t,k,t==='att'?{...rec,...cur.rec,s:{...(rec.s||{}),...(cur.rec.s||{})}}:Object.assign({},rec,cur.rec));state.base[it.key]=ih;changed=true;continue}   // different subjects entered on two phones: keep both
           if(ih!==bh)addConflict(it.key,'Edited on two devices at once — this device’s version was kept',nj);
           continue;
         }
@@ -413,7 +412,7 @@
     const items=[];let maxU=0;
     snap.forEach(d=>{const x=d.data();const u=x.u&&x.u.toMillis?x.u.toMillis():0;if(u>maxU)maxU=u;items.push({key:d.id,x:!!x.x,j:x.j,u})});
     items.sort((a,b)=>a.u-b.u);
-    const nd={id:(S&&S.id)||1,rno:1,seed:1,p:[],t:[],fi:[],pay:[],dl:[],sc:{},cm:{},ta:{}};
+    const nd={id:(S&&S.id)||1,rno:1,seed:1,p:[],t:[],fi:[],pay:[],dl:[],ex:[],ev:[],att:{},en:{},tt:{},ros:{},sc:{},cm:{},ta:{}};
     const savedBase=state.base;state.base={};
     applyItems(nd,items,true);
     if(!nd.cfg){state.base=savedBase;throw new Error('This school has no records in the cloud yet. Ask the owner to finish setting it up.')}
