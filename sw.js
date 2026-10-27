@@ -1,5 +1,5 @@
-const CACHE_NAME = 'smartschool-v10';
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './firebase-config.js', './firebase-bundle.js', './cloud.js', './subscription.js', './jspdf.umd.min.js', './jspdf.plugin.autotable.min.js'];
+const CACHE_NAME = 'smartschool-v11';
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './firebase-config.js', './firebase-bundle.js', './cloud.js', './subscription.js', './jspdf.umd.min.js', './jspdf.plugin.autotable.min.js', './pdf.js', './finder.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });

@@ -60,3 +60,15 @@ KNOWN LIMITS
     merged; the same subject entered twice keeps the later one. Receipt numbers could repeat if two phones record a
     payment at the very same moment; the records themselves are all kept.
   - Restoring a backup on a connected phone replaces the school's records for everyone (the app asks first).
+
+------------------------------------------------------------------------
+NEW: PDF SHARING, SEARCH AND FILTERS  (upload pdf.js and finder.js with the other files)
+------------------------------------------------------------------------
+- Fees receipts, payment vouchers and report cards each have "Share as PDF" and "Download PDF" buttons.
+- Assess > Reports: one button makes ALL report cards of the chosen class in a single PDF (one page per pupil).
+- More: "Backup as PDF" (readable report + hidden full copy of the data), "Whole school report (PDF)".
+  Restore from backup accepts the .json file, pasted text, OR a backup PDF. Keep the .json backup as well; a PDF backup
+  cannot be restored if another PDF program edits or re-saves it.
+- The round search button opens "Search everything" (pupils, fee receipts, teachers, expenses, calendar, links, fee items)
+  with area chips and a date range. Long lists also get a filter bar (text + calendar button).
+- The existing Export reports (PDF / CSV) page is unchanged.
